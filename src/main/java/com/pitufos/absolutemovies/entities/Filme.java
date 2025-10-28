@@ -33,9 +33,15 @@ public class Filme implements Serializable{
     @Column(nullable = false)
     private String titulo;
 
-    @Lob
-    @Column(name = "descricao", columnDefinition = "TEXT")
-    private String descricao;
+	 // antes
+	 // @Lob
+	 // @Column(name = "descricao", columnDefinition = "TEXT")
+	 // private String descricao;
+
+	 // depois (remover @Lob)
+	 @Column(name = "descricao", columnDefinition = "TEXT")
+	 private String descricao;
+
 
     @Column(name = "ano_lancamento")
     private Integer anoLancamento;
