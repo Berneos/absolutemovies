@@ -10,4 +10,5 @@ public interface UsuarioService {
     Usuario updatePreferences(Long usuarioId, List<Genero> novasPreferencias);
     void avaliarFilme(Long usuarioId, Filme filme, int nota);
     Usuario findById(Long id);
+    Usuario autenticar(String email, String senha);
 }

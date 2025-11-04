@@ -69,5 +69,10 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
     }
+    
+    @Override
+    public Usuario autenticar(String email, String senha) {
+        return usuarioRepository.findByEmailAndSenha(email, senha).orElse(null);
+    }
 }
 	

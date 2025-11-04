@@ -33,6 +33,16 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body(Map.of("erro", e.getMessage()));
         }
     }
+    
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Usuario usuario) {
+        Usuario autenticado = usuarioService.autenticar(usuario.getEmail(), usuario.getSenha());
+        if (autenticado != null) {
+            return ResponseEntity.ok(autenticado);
+        } else {
+            return ResponseEntity.status(401).body("Usuário ou senha inválidos");
+        }
+    }
 
     /**
      * Buscar usuário por ID
