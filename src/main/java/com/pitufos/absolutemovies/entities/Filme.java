@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,13 +17,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "filme")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Filme implements Serializable{
 
 
@@ -81,6 +84,7 @@ public class Filme implements Serializable{
     private List<Genero> generos = new ArrayList<>();
 
     // Relacionamento com Interacao (historico de avaliações)
+    @JsonIgnore
     @OneToMany(mappedBy = "filme", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Interacao> interacoes = new ArrayList<>();
 

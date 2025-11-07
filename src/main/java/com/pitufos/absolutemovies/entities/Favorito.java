@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,20 +24,22 @@ import jakarta.persistence.UniqueConstraint;
     name = "favorito",
     uniqueConstraints = @UniqueConstraint(name = "uk_usuario_filme", columnNames = {"usuario_id", "filme_id"})
 )
-public class Favorito implements Serializable{
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class Favorito implements Serializable {
 
+    private static final long serialVersionUID = 1L;
 
-	private static final long serialVersionUID = 1L;
-
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idFavorito;
 
+    @JsonBackReference // Evita loop com Usuario
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JsonManagedReference // Permite exibir o Filme normalmente
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "filme_id", nullable = false)
     private Filme filme;
 

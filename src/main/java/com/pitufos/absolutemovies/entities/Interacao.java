@@ -4,7 +4,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,6 +19,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "interacao")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Interacao implements Serializable{
 
 	private static final long serialVersionUID = 1L;
@@ -26,10 +28,12 @@ public class Interacao implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idInteracao;
 
+	@JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
+	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "filme_id", nullable = false)
     private Filme filme;

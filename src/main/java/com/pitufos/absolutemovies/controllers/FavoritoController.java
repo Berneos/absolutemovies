@@ -1,10 +1,17 @@
 package com.pitufos.absolutemovies.controllers;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.pitufos.absolutemovies.dto.FavoritoDTO;
 import com.pitufos.absolutemovies.entities.Favorito;
 import com.pitufos.absolutemovies.entities.Filme;
 import com.pitufos.absolutemovies.entities.Usuario;
@@ -28,19 +35,21 @@ public class FavoritoController {
         this.filmeRepository = filmeRepository;
     }
 
-    // Adicionar favorito
+    // ✅ Adicionar favorito (retorna DTO)
     @PostMapping("/{idUsuario}/{idFilme}")
-    public ResponseEntity<Favorito> adicionarFavorito(@PathVariable Long idUsuario, @PathVariable Long idFilme) {
+    public ResponseEntity<FavoritoDTO> adicionarFavorito(@PathVariable Long idUsuario, @PathVariable Long idFilme) {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
         Filme filme = filmeRepository.findById(idFilme)
                 .orElseThrow(() -> new RuntimeException("Filme não encontrado"));
 
         Favorito favorito = favoritoService.adicionarFavorito(usuario, filme);
-        return ResponseEntity.ok(favorito);
+        FavoritoDTO favoritoDTO = new FavoritoDTO(favorito);
+
+        return ResponseEntity.ok(favoritoDTO);
     }
 
-    // Remover favorito
+    // ✅ Remover favorito
     @DeleteMapping("/{idUsuario}/{idFilme}")
     public ResponseEntity<Void> removerFavorito(@PathVariable Long idUsuario, @PathVariable Long idFilme) {
         Usuario usuario = usuarioRepository.findById(idUsuario)
@@ -52,13 +61,17 @@ public class FavoritoController {
         return ResponseEntity.noContent().build();
     }
 
-    // Listar favoritos de um usuário
+    // ✅ Listar favoritos de um usuário (retorna lista de DTOs)
     @GetMapping("/{idUsuario}")
-    public ResponseEntity<List<Favorito>> listarFavoritos(@PathVariable Long idUsuario) {
+    public ResponseEntity<List<FavoritoDTO>> listarFavoritos(@PathVariable Long idUsuario) {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         List<Favorito> favoritos = favoritoService.listarFavoritos(usuario);
-        return ResponseEntity.ok(favoritos);
+        List<FavoritoDTO> favoritosDTO = favoritos.stream()
+                .map(FavoritoDTO::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(favoritosDTO);
     }
 }

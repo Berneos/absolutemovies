@@ -3,6 +3,7 @@ package com.pitufos.absolutemovies.services.impl;
 import java.util.List;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,11 +20,11 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final InteracaoRepository interacaoRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     public UsuarioServiceImpl(UsuarioRepository usuarioRepository,
                               InteracaoRepository interacaoRepository,
-                              BCryptPasswordEncoder passwordEncoder) {
+                              PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.interacaoRepository = interacaoRepository;
         this.passwordEncoder = passwordEncoder;
@@ -73,6 +74,11 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Usuario autenticar(String email, String senha) {
         return usuarioRepository.findByEmailAndSenha(email, senha).orElse(null);
+    }
+    
+    @Override
+    public List<Usuario> findAll() {
+        return usuarioRepository.findAll();
     }
 }
 	

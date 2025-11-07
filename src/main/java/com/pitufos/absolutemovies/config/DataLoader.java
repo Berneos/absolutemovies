@@ -1,22 +1,38 @@
 package com.pitufos.absolutemovies.config;
 
+import java.util.List;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.pitufos.absolutemovies.entities.Favorito;
 import com.pitufos.absolutemovies.entities.Filme;
 import com.pitufos.absolutemovies.entities.Genero;
+import com.pitufos.absolutemovies.entities.Interacao;
+import com.pitufos.absolutemovies.entities.Usuario;
+import com.pitufos.absolutemovies.repositories.FavoritoRepository;
 import com.pitufos.absolutemovies.repositories.FilmeRepository;
 import com.pitufos.absolutemovies.repositories.GeneroRepository;
-
-import java.util.List;
+import com.pitufos.absolutemovies.repositories.InteracaoRepository;
+import com.pitufos.absolutemovies.repositories.UsuarioRepository;
 
 @Configuration
 public class DataLoader {
 
     @Bean
-    CommandLineRunner loadData(FilmeRepository filmeRepo, GeneroRepository generoRepo) {
+    CommandLineRunner loadData(
+            FilmeRepository filmeRepo,
+            GeneroRepository generoRepo,
+            UsuarioRepository usuarioRepo,
+            FavoritoRepository favoritoRepo,
+            InteracaoRepository interacaoRepo
+    ) {
         return args -> {
+            // ==============================
+            // GÊNEROS
+            // ==============================
             if (generoRepo.count() == 0) {
                 Genero acao = new Genero("Ação");
                 Genero comedia = new Genero("Comédia");
@@ -25,6 +41,9 @@ public class DataLoader {
                 System.out.println("✅ Gêneros inseridos!");
             }
 
+            // ==============================
+            // FILMES
+            // ==============================
             if (filmeRepo.count() == 0) {
                 List<Genero> generos = generoRepo.findAll();
 
@@ -45,6 +64,53 @@ public class DataLoader {
 
                 filmeRepo.saveAll(List.of(f1, f2, f3));
                 System.out.println("🎬 Filmes inseridos!");
+            }
+
+            // ==============================
+            // USUÁRIO
+            // ==============================
+            Usuario user;
+            if (usuarioRepo.count() == 0) {
+                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                String senhaCriptografada = encoder.encode("123456");
+
+                user = new Usuario("Breno Martins", "breno@gmail.com", senhaCriptografada);
+                List<Genero> generos = generoRepo.findAll();
+                user.setPreferencias(List.of(generos.get(0), generos.get(1))); // Ação e Comédia
+                user = usuarioRepo.save(user);
+                System.out.println("👤 Usuário criado!");
+            } else {
+                user = usuarioRepo.findAll().get(0);
+            }
+
+            // ==============================
+            // FAVORITOS
+            // ==============================
+            if (favoritoRepo.count() == 0) {
+                List<Filme> filmes = filmeRepo.findAll();
+
+                Favorito fav1 = new Favorito(user, filmes.get(0)); // Matrix
+                Favorito fav2 = new Favorito(user, filmes.get(1)); // Forrest Gump
+
+                user.getFavoritos().addAll(List.of(fav1, fav2));
+                favoritoRepo.saveAll(List.of(fav1, fav2));
+                usuarioRepo.save(user);
+
+                System.out.println("❤️ Favoritos criados para " + user.getNome());
+            }
+
+            // ==============================
+            // INTERAÇÕES
+            // ==============================
+            if (interacaoRepo.count() == 0) {
+                List<Filme> filmes = filmeRepo.findAll();
+
+                Interacao inter1 = new Interacao(user, filmes.get(0), 5); // Avaliou Matrix com 5
+                Interacao inter2 = new Interacao(user, filmes.get(2), 4); // Avaliou Todo Mundo em Pânico com 4
+
+                interacaoRepo.saveAll(List.of(inter1, inter2));
+
+                System.out.println("💬 Interações criadas para " + user.getNome());
             }
         };
     }

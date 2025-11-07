@@ -13,6 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>absolutemovies</name>
 	<description>Recomendação de filmes com base em IA</description>
+	<packaging>jar</packaging>
 	<url/>
 	<licenses>
 		<license/>
@@ -67,7 +68,13 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
+
+
 		</dependency>
+			<dependency>
+			    <groupId>org.springframework.security</groupId>
+			    <artifactId>spring-security-crypto</artifactId>
+			</dependency>
 	
 		<!-- https://mvnrepository.com/artifact/org.json/json -->
 		<dependency>

@@ -1,15 +1,18 @@
 package com.pitufos.absolutemovies.controllers;
 
-import com.pitufos.absolutemovies.entities.Interacao;
-import com.pitufos.absolutemovies.services.InteracaoService;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.pitufos.absolutemovies.entities.Interacao;
+import com.pitufos.absolutemovies.services.InteracaoService;
 
 @RestController
 @RequestMapping("/interacoes")
+@CrossOrigin(origins = "*") // ✅ permite chamadas externas (ex: React)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // ✅ evita erro com proxies Hibernate
 public class InteracaoController {
 
     private final InteracaoService interacaoService;
@@ -19,7 +22,7 @@ public class InteracaoController {
     }
 
     // ==============================
-    // CRIAR UMA NOVA INTERAÇÃO (avaliação)
+    // CRIAR UMA NOVA INTERAÇÃO (avaliação, like, etc.)
     // ==============================
     @PostMapping
     public ResponseEntity<?> criarInteracao(
@@ -42,5 +45,16 @@ public class InteracaoController {
     public ResponseEntity<List<Interacao>> obterHistorico(@PathVariable Long usuarioId) {
         List<Interacao> historico = interacaoService.obterHistorico(usuarioId);
         return ResponseEntity.ok(historico);
+    }
+
+
+
+    // ==============================
+    // CALCULAR MÉDIA DE AVALIAÇÕES DE UM FILME
+    // ==============================
+    @GetMapping("/filme/{filmeId}/media")
+    public ResponseEntity<Double> calcularMediaFilme(@PathVariable Long filmeId) {
+        Double media = interacaoService.calcularMediaAvaliacao(filmeId);
+        return ResponseEntity.ok(media);
     }
 }

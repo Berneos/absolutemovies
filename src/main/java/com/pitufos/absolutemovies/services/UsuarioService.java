@@ -11,4 +11,6 @@ public interface UsuarioService {
     void avaliarFilme(Long usuarioId, Filme filme, int nota);
     Usuario findById(Long id);
     Usuario autenticar(String email, String senha);
+    public List<Usuario> findAll();
+    
 }

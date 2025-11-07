@@ -1,14 +1,20 @@
 package com.pitufos.absolutemovies.controllers;
 
-import com.pitufos.absolutemovies.entities.Recomendacao;
-import com.pitufos.absolutemovies.entities.Usuario;
-import com.pitufos.absolutemovies.repositories.UsuarioRepository;
-import com.pitufos.absolutemovies.services.RecomendacaoService;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import com.pitufos.absolutemovies.dto.RecomendacaoDTO;
+import com.pitufos.absolutemovies.dto.UsuarioDTO;
+import com.pitufos.absolutemovies.dto.FilmeDTO;
+import com.pitufos.absolutemovies.entities.Recomendacao;
+import com.pitufos.absolutemovies.entities.Usuario;
+import com.pitufos.absolutemovies.entities.Filme;
+import com.pitufos.absolutemovies.repositories.UsuarioRepository;
+import com.pitufos.absolutemovies.repositories.FilmeRepository;
+import com.pitufos.absolutemovies.services.RecomendacaoService;
 
 @RestController
 @RequestMapping("/recomendacoes")
@@ -16,21 +22,36 @@ public class RecomendacaoController {
 
     private final RecomendacaoService recomendacaoService;
     private final UsuarioRepository usuarioRepository;
+    private final FilmeRepository filmeRepository;
 
     public RecomendacaoController(RecomendacaoService recomendacaoService,
-                                  UsuarioRepository usuarioRepository) {
+                                  UsuarioRepository usuarioRepository,
+                                  FilmeRepository filmeRepository) {
         this.recomendacaoService = recomendacaoService;
         this.usuarioRepository = usuarioRepository;
+        this.filmeRepository = filmeRepository;
     }
 
     // ==============================
     // 1️⃣ - Criar nova recomendação
     // ==============================
     @PostMapping
-    public ResponseEntity<?> criar(@RequestBody Recomendacao recomendacao) {
+    public ResponseEntity<?> criar(@RequestBody RecomendacaoDTO dto) {
         try {
+            Usuario usuario = usuarioRepository.findById(dto.getUsuario().getIdUsuario())
+                    .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+            Filme filme = filmeRepository.findById(dto.getFilme().getIdFilme())
+                    .orElseThrow(() -> new IllegalArgumentException("Filme não encontrado"));
+
+            Recomendacao recomendacao = new Recomendacao();
+            recomendacao.setUsuario(usuario);
+            recomendacao.setFilme(filme);
+            recomendacao.setOrigemIA(dto.getOrigemIA());
+            recomendacao.setScore(dto.getScore());
+
             Recomendacao salva = recomendacaoService.salvar(recomendacao);
-            return ResponseEntity.ok(salva);
+            return ResponseEntity.ok(new RecomendacaoDTO(salva));
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Erro ao salvar recomendação: " + e.getMessage());
         }
@@ -40,8 +61,12 @@ public class RecomendacaoController {
     // 2️⃣ - Listar todas as recomendações
     // ==============================
     @GetMapping
-    public ResponseEntity<List<Recomendacao>> listarTodas() {
-        return ResponseEntity.ok(recomendacaoService.buscarTodas());
+    public ResponseEntity<List<RecomendacaoDTO>> listarTodas() {
+        List<RecomendacaoDTO> lista = recomendacaoService.buscarTodas()
+                .stream()
+                .map(RecomendacaoDTO::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(lista);
     }
 
     // ==============================
@@ -50,7 +75,7 @@ public class RecomendacaoController {
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
         return recomendacaoService.buscarPorId(id)
-                .map(ResponseEntity::ok)
+                .map(rec -> ResponseEntity.ok(new RecomendacaoDTO(rec)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -66,7 +91,11 @@ public class RecomendacaoController {
             return ResponseEntity.badRequest().body("Usuário não encontrado");
         }
 
-        List<Recomendacao> recomendacoes = recomendacaoService.buscarPorUsuario(usuario);
+        List<RecomendacaoDTO> recomendacoes = recomendacaoService.buscarPorUsuario(usuario)
+                .stream()
+                .map(RecomendacaoDTO::new)
+                .collect(Collectors.toList());
+
         return ResponseEntity.ok(recomendacoes);
     }
 

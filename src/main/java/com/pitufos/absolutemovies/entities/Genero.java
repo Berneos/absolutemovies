@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,6 +19,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "genero")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Genero implements Serializable{
 
   
@@ -32,6 +36,7 @@ public class Genero implements Serializable{
      * Lado inverso do relacionamento ManyToMany com Usuario.
      * A propriedade "preferencias" é a que declaramos como owning side em Usuario.
      */
+    @JsonIgnore
     @ManyToMany(mappedBy = "preferencias", fetch = FetchType.LAZY)
     private List<Usuario> usuarios = new ArrayList<>();
 

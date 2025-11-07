@@ -1,8 +1,8 @@
 package com.pitufos.absolutemovies.controllers;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pitufos.absolutemovies.entities.Genero;
 import com.pitufos.absolutemovies.services.GeneroService;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,6 +10,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/generos")
+@CrossOrigin(origins = "*") // ✅ permite acesso externo (React, etc.)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // ✅ evita erro de proxy Hibernate
 public class GeneroController {
 
     private final GeneroService generoService;
@@ -18,18 +20,14 @@ public class GeneroController {
         this.generoService = generoService;
     }
 
-    // ==============================
-    // LISTAR TODOS
-    // ==============================
+    // ✅ Listar todos os gêneros
     @GetMapping
     public ResponseEntity<List<Genero>> listarTodos() {
         List<Genero> generos = generoService.listarTodos();
         return ResponseEntity.ok(generos);
     }
 
-    // ==============================
-    // BUSCAR POR ID
-    // ==============================
+    // ✅ Buscar gênero por ID
     @GetMapping("/{id}")
     public ResponseEntity<Genero> buscarPorId(@PathVariable Long id) {
         return generoService.buscarPorId(id)
@@ -37,9 +35,7 @@ public class GeneroController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ==============================
-    // BUSCAR POR NOME
-    // ==============================
+    // ✅ Buscar gênero por nome (ex: /generos/nome/Ação)
     @GetMapping("/nome/{nome}")
     public ResponseEntity<Genero> buscarPorNome(@PathVariable String nome) {
         return generoService.buscarPorNome(nome)
@@ -47,9 +43,7 @@ public class GeneroController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ==============================
-    // CRIAR NOVO GÊNERO
-    // ==============================
+    // ✅ Criar novo gênero
     @PostMapping
     public ResponseEntity<?> criarGenero(@RequestBody Genero genero) {
         try {
@@ -60,9 +54,7 @@ public class GeneroController {
         }
     }
 
-    // ==============================
-    // ATUALIZAR GÊNERO
-    // ==============================
+    // ✅ Atualizar gênero existente
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizarGenero(@PathVariable Long id, @RequestBody Genero generoAtualizado) {
         return generoService.buscarPorId(id)
@@ -78,9 +70,7 @@ public class GeneroController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ==============================
-    // DELETAR GÊNERO
-    // ==============================
+    // ✅ Deletar gênero
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletar(@PathVariable Long id) {
         try {

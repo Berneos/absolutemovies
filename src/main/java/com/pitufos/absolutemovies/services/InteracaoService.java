@@ -6,4 +6,7 @@ import java.util.List;
 public interface InteracaoService {
     Interacao salvarInteracao(Long usuarioId, Long filmeId, int avaliacao);
     List<Interacao> obterHistorico(Long usuarioId);
+
+    // ✅ Novo método para calcular a média das avaliações de um filme
+    Double calcularMediaAvaliacao(Long filmeId);
 }

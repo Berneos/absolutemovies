@@ -1,6 +1,7 @@
 package com.pitufos.absolutemovies.services.impl;
 
 import java.util.List;
+import java.util.OptionalDouble;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,5 +50,21 @@ public class InteracaoServiceImpl implements InteracaoService {
     @Override
     public List<Interacao> obterHistorico(Long usuarioId) {
         return interacaoRepository.findByUsuario_IdUsuarioOrderByDataDesc(usuarioId);
+    }
+
+    // ✅ Novo método para calcular média das avaliações de um filme
+    @Override
+    public Double calcularMediaAvaliacao(Long filmeId) {
+        List<Interacao> interacoes = interacaoRepository.findByFilme_IdFilme(filmeId);
+
+        if (interacoes.isEmpty()) {
+            return 0.0; // ou null, se quiser indicar ausência de avaliações
+        }
+
+        OptionalDouble media = interacoes.stream()
+                .mapToInt(Interacao::getAvaliacao)
+                .average();
+
+        return media.orElse(0.0);
     }
 }

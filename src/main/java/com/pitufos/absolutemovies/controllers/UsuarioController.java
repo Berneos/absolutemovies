@@ -1,14 +1,19 @@
 package com.pitufos.absolutemovies.controllers;
 
+import com.pitufos.absolutemovies.dto.FilmeDTO;
+import com.pitufos.absolutemovies.dto.GeneroDTO;
+import com.pitufos.absolutemovies.dto.UsuarioDTO;
 import com.pitufos.absolutemovies.entities.Filme;
 import com.pitufos.absolutemovies.entities.Genero;
 import com.pitufos.absolutemovies.entities.Usuario;
 import com.pitufos.absolutemovies.services.UsuarioService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -21,66 +26,84 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    /**
-     * Registrar novo usuário
-     */
+    // ===============================
+    // 1️⃣ - Listar todos os usuários
+    // ===============================
+    @GetMapping
+    public ResponseEntity<List<UsuarioDTO>> listarTodos() {
+        List<Usuario> usuarios = usuarioService.findAll();
+        List<UsuarioDTO> usuariosDTO = usuarios.stream()
+                .map(UsuarioDTO::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(usuariosDTO);
+    }
+
+    // ===============================
+    // 2️⃣ - Registrar novo usuário
+    // ===============================
     @PostMapping("/registrar")
-    public ResponseEntity<?> registrarUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<?> registrarUsuario(@RequestBody UsuarioDTO usuarioDTO) {
         try {
-            Usuario novo = usuarioService.register(usuario);
-            return ResponseEntity.ok(novo);
+            Usuario novoUsuario = usuarioService.register(usuarioDTO.toEntity());
+            return ResponseEntity.ok(new UsuarioDTO(novoUsuario));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("erro", e.getMessage()));
         }
     }
-    
+
+    // ===============================
+    // 3️⃣ - Login
+    // ===============================
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Usuario usuario) {
-        Usuario autenticado = usuarioService.autenticar(usuario.getEmail(), usuario.getSenha());
+    public ResponseEntity<?> login(@RequestBody UsuarioDTO usuarioDTO) {
+        Usuario autenticado = usuarioService.autenticar(usuarioDTO.getEmail(), usuarioDTO.getSenha());
         if (autenticado != null) {
-            return ResponseEntity.ok(autenticado);
+            return ResponseEntity.ok(new UsuarioDTO(autenticado));
         } else {
-            return ResponseEntity.status(401).body("Usuário ou senha inválidos");
+            return ResponseEntity.status(401).body(Map.of("erro", "Usuário ou senha inválidos"));
         }
     }
 
-    /**
-     * Buscar usuário por ID
-     */
+    // ===============================
+    // 4️⃣ - Buscar usuário por ID
+    // ===============================
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
         try {
             Usuario usuario = usuarioService.findById(id);
-            return ResponseEntity.ok(usuario);
+            return ResponseEntity.ok(new UsuarioDTO(usuario));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("erro", e.getMessage()));
         }
     }
 
-    /**
-     * Atualizar preferências de gêneros do usuário
-     */
+    // ===============================
+    // 5️⃣ - Atualizar preferências
+    // ===============================
     @PutMapping("/{id}/preferencias")
     public ResponseEntity<?> atualizarPreferencias(
             @PathVariable Long id,
-            @RequestBody List<Genero> preferencias) {
+            @RequestBody List<GeneroDTO> preferenciasDTO) {
         try {
+            List<Genero> preferencias = preferenciasDTO.stream()
+                    .map(GeneroDTO::toEntity)
+                    .collect(Collectors.toList());
+
             Usuario atualizado = usuarioService.updatePreferences(id, preferencias);
-            return ResponseEntity.ok(atualizado);
+            return ResponseEntity.ok(new UsuarioDTO(atualizado));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("erro", e.getMessage()));
         }
     }
 
-    /**
-     * Registrar uma avaliação de filme pelo usuário
-     */
+    // ===============================
+    // 6️⃣ - Avaliar filme
+    // ===============================
     @PostMapping("/{id}/avaliar")
     public ResponseEntity<?> avaliarFilme(
             @PathVariable Long id,
             @RequestBody Map<String, Object> payload) {
         try {
-            // Espera-se algo como { "filmeId": 3, "nota": 4 }
             Long filmeId = ((Number) payload.get("filmeId")).longValue();
             int nota = (int) payload.get("nota");
 

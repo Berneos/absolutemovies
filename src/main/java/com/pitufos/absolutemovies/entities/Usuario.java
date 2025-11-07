@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,6 +23,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "usuario")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Usuario implements Serializable{
 
  
@@ -48,10 +52,23 @@ public class Usuario implements Serializable{
     )
     private List<Genero> preferencias = new ArrayList<>();
 
-    // Histórico de interações (one-to-many)
+    public List<Favorito> getFavoritos() {
+		return favoritos;
+	}
+
+	public void setFavoritos(List<Favorito> favoritos) {
+		this.favoritos = favoritos;
+	}
+
+	// Histórico de interações (one-to-many)
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Interacao> historico = new ArrayList<>();
 
+    @JsonManagedReference
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Favorito> favoritos = new ArrayList<>();
+
+    
     public Usuario() {}
 
     public Usuario(String nome, String email, String senha) {
