@@ -17,6 +17,30 @@ public class FavoritoDTO {
         this.dataFavorito = favorito.getDataFavorito();
     }
 
+	public Long getIdFavorito() {
+		return idFavorito;
+	}
+
+	public void setIdFavorito(Long idFavorito) {
+		this.idFavorito = idFavorito;
+	}
+
+	public FilmeDTO getFilme() {
+		return filme;
+	}
+
+	public void setFilme(FilmeDTO filme) {
+		this.filme = filme;
+	}
+
+	public LocalDateTime getDataFavorito() {
+		return dataFavorito;
+	}
+
+	public void setDataFavorito(LocalDateTime dataFavorito) {
+		this.dataFavorito = dataFavorito;
+	}
+
     // Getters e Setters
     // ...
 }

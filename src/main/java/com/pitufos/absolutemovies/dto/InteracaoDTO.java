@@ -19,6 +19,38 @@ public class InteracaoDTO {
         this.data = interacao.getData();
     }
 
+	public Long getIdInteracao() {
+		return idInteracao;
+	}
+
+	public void setIdInteracao(Long idInteracao) {
+		this.idInteracao = idInteracao;
+	}
+
+	public FilmeDTO getFilme() {
+		return filme;
+	}
+
+	public void setFilme(FilmeDTO filme) {
+		this.filme = filme;
+	}
+
+	public Integer getAvaliacao() {
+		return avaliacao;
+	}
+
+	public void setAvaliacao(Integer avaliacao) {
+		this.avaliacao = avaliacao;
+	}
+
+	public LocalDateTime getData() {
+		return data;
+	}
+
+	public void setData(LocalDateTime data) {
+		this.data = data;
+	}
+
     // Getters e Setters
     // ...
 }

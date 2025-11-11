@@ -41,26 +41,23 @@ public class IAController {
 
             Usuario usuario = usuarioService.findById(usuarioId);
 
-            // 1. Gerar recomendação via IA
-            Optional<String> tituloFilme = iaService.gerarRecomendacaoFilme(usuario, humor);
-            if (tituloFilme.isEmpty()) {
+            // Gera recomendação da IA
+            Optional<String> respostaIA = iaService.gerarRecomendacaoFilme(usuario, humor);
+            if (respostaIA.isEmpty()) {
                 return ResponseEntity.ok(Map.of("mensagem", "Nenhum filme recomendado no momento"));
             }
 
-            // 2. Buscar o filme no banco
-            Filme filme = iaService.buscarFilmeRecomendado(tituloFilme.get());
-            if (filme == null) {
-                return ResponseEntity.ok(Map.of("mensagem", "Filme recomendado não encontrado no banco de dados"));
-            }
+            // Retorna resposta textual simples
+            return ResponseEntity.ok(Map.of(
+                    "mensagem", "Recomendação da IA gerada com sucesso",
+                    "respostaIA", respostaIA.get(),
+                    "modelo", iaService.getModelo()
+            ));
 
-            // 3. Salvar recomendação no banco
-            Recomendacao recomendacao = new Recomendacao(usuario, filme, iaService.getModelo(), 1.0f); 
-            // score fictício = 1.0f; você pode alterar ou gerar dinamicamente
-            recomendacaoService.salvar(recomendacao);
-
-            return ResponseEntity.ok(recomendacao);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("erro", e.getMessage()));
         }
     }
-}
+
+ }
+

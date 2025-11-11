@@ -1,12 +1,12 @@
 package com.pitufos.absolutemovies.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import com.pitufos.absolutemovies.dto.LoginRequestDTO;
 import com.pitufos.absolutemovies.entities.Usuario;
 import com.pitufos.absolutemovies.repositories.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -22,7 +22,7 @@ public class LoginController {
     private BCryptPasswordEncoder passwordEncoder;
 
     @PostMapping
-    public ResponseEntity<?> login(@RequestBody Usuario loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(loginRequest.getEmail());
 
         if (usuarioOpt.isEmpty()) {
@@ -35,8 +35,8 @@ public class LoginController {
             return ResponseEntity.status(401).body("Senha incorreta");
         }
 
-        // Login OK: retorna o usuário (sem senha)
-        usuario.setSenha(null);
+       
+
         return ResponseEntity.ok(usuario);
     }
 }
