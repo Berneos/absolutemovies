@@ -89,6 +89,12 @@ Caso queira testar o app, entre em contato para ativação.
 - 📱 11 97495-5197\
 - 💻 Responsável pelo site/interface
 
+### **Karina Rangel**
+
+-   📱 11 98929-8505\
+-   🔗 Email: karina.rangel247@gmail.com
+-   💻 Responsável pelo site/interface
+
 ---
 
 ## 📄 Licença
