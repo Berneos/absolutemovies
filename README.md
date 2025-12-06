@@ -80,7 +80,14 @@ Caso queira testar o app, entre em contato para ativação.
 **Breno Martins de Souza**  
 - 📱 11 94935-7107  
 - 🔗 LinkedIn: https://www.linkedin.com/in/brenomartinsdev/  
-- 🐙 GitHub: https://github.com/Berneos  
+- 🐙 GitHub: https://github.com/Berneos
+- 💻 Responsável pelo Back-End
+  
+
+### **Luisa Bonelli**
+
+- 📱 11 97495-5197\
+- 💻 Responsável pelo site/interface
 
 ---
 
